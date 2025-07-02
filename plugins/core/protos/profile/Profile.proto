@@ -20,9 +20,6 @@ syntax = "proto3";
 
 package skywalking.v3;
 
-option java_multiple_files = true;
-option java_package = "org.apache.skywalking.apm.network.language.profile.v3";
-option csharp_namespace = "SkyWalking.NetworkProtocol.V3";
 option go_package = "skywalking.apache.org/repo/goapi/collect/language/profile/v3";
 
 import "plugins/core/protos/common/Command.proto";
@@ -37,6 +34,8 @@ service ProfileTask {
   rpc collectSnapshot (stream ThreadSnapshot) returns (Commands) {
   }
 
+  // collect bytes profile data from go agent
+  rpc goProfileReport(stream GoProfileData)returns(Commands){}
   // report profiling task finished
   rpc reportTaskFinish (ProfileTaskFinishReport) returns (Commands) {
   }
@@ -79,4 +78,16 @@ message ProfileTaskFinishReport {
 
   // profile task
   string taskId = 3;
+}
+
+// profile for go agent
+message GoProfileData{
+  string taskId = 1;
+  string traceId=2;
+  string endPointName=3;
+  int64 minDurationThreshold=4;
+  // the truly profile data
+  bytes payload=5;
+  // check last part true or false
+  bool isLast = 6;
 }
