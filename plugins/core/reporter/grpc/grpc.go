@@ -42,17 +42,20 @@ func NewGRPCReporter(logger operator.LogOperator,
 	checkInterval time.Duration,
 	connManager *reporter.ConnectionManager,
 	cdsManager *reporter.CDSManager,
+	profileInterval time.Duration,
 	opts ...ReporterOption,
+
 ) (reporter.Reporter, error) {
 	r := &gRPCReporter{
-		logger:        logger,
-		serverAddr:    serverAddr,
-		tracingSendCh: make(chan *agentv3.SegmentObject, maxSendQueueSize),
-		metricsSendCh: make(chan []*agentv3.MeterData, maxSendQueueSize),
-		logSendCh:     make(chan *logv3.LogData, maxSendQueueSize),
-		checkInterval: checkInterval,
-		connManager:   connManager,
-		cdsManager:    cdsManager,
+		logger:          logger,
+		serverAddr:      serverAddr,
+		tracingSendCh:   make(chan *agentv3.SegmentObject, maxSendQueueSize),
+		metricsSendCh:   make(chan []*agentv3.MeterData, maxSendQueueSize),
+		logSendCh:       make(chan *logv3.LogData, maxSendQueueSize),
+		checkInterval:   checkInterval,
+		profileInterval: profileInterval,
+		connManager:     connManager,
+		cdsManager:      cdsManager,
 	}
 	for _, o := range opts {
 		o(r)
@@ -81,7 +84,7 @@ type gRPCReporter struct {
 	logClient        logv3.LogReportServiceClient
 	managementClient managementv3.ManagementServiceClient
 	checkInterval    time.Duration
-
+	profileInterval  time.Duration
 	// bootFlag is set if Boot be executed
 	bootFlag    bool
 	transform   *reporter.Transform
