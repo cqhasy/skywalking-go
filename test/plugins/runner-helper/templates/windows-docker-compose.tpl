@@ -37,6 +37,8 @@ services:
     volumes:
       - {{.Context.WorkSpaceDir}}:/workspace
     command: ["/bin/bash", "-c", "sleep 10s && /workspace/validator.sh"]
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
   {{- range $name, $service := .Context.Config.Dependencies }}
   {{$name}}:
     image: {{$service.Image}}
